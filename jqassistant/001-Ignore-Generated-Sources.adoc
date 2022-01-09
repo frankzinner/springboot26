@@ -1,0 +1,31 @@
+== 001 - Ignore generated sources
+
+=== Status: Proposed
+
+=== Context
+
+* Generated source files should not be included in quality scans and metrics
+
+=== Decision
+
+* Generated sources will be ignored
+** tbd
+
+=== Consequences
+
+* Generated sources will not pop up in analysis
+
+[[adr:IgnoreGeneratedSources]]
+[source,cypher,role=concept,providesConcepts="java:GeneratedType",verify=aggregation]
+
+.Generated Java Types
+----
+MATCH
+  (t:Type)
+WHERE
+  t.fqn starts with "com.examples.generated"
+SET
+  t:Generated
+RETURN
+  count(t) as GeneratedTypes
+----

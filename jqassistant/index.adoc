@@ -1,0 +1,9 @@
+:toc: left
+
+= Example for Architecture Decision Records
+
+[[adr]]
+[role=group,includesGroups="adr:*",includesConcepts="adr:*"]
+- <<adr:IgnoreGeneratedSources>>
+
+include::001-Ignore-Generated-Sources.adoc[]

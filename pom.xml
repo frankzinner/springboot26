@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.6.2</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
+    <groupId>com.example</groupId>
+    <artifactId>springboot-demo</artifactId>
+    <version>0.0.1-1</version>
+    <name>SpringBoot 2.6 Demo</name>
+    <description>Demo project for Spring Boot 2.6</description>
+
+    <scm>
+        <url>https://frank-zinner.de/</url>
+        <connection>ssh://some.uri.net/some-git-repo/</connection>
+    </scm>
+
+    <properties>
+        <java.version>11</java.version>
+        <jkube.version>1.5.1</jkube.version>
+        <jkube.build.strategy>docker</jkube.build.strategy> <!-- // alternative is jib (java image builder) in case docker is not available -->
+        <jkube.docker.push.retries>0</jkube.docker.push.retries>
+        <jkube.generator.name>frankzinner/spring-boot26</jkube.generator.name>
+        <jkube.skip.push>false</jkube.skip.push>
+        <jkube.skip.tag>false</jkube.skip.tag>
+        <!--<docker.buildArg.myBuildArg>myValue</docker.buildArg.myBuildArg>-->
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <!--<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jdbc</artifactId>
+        </dependency>-->
+        <!--<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>-->
+        <!--<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-rest</artifactId>
+        </dependency>-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc</artifactId>
+        </dependency>
+        <!--<dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <!-- explicit version due to security issue CVE-2021-23463 -->
+            <version>2.0.204</version>
+            <scope>runtime</scope>
+        </dependency>
+        <!--<dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <scope>runtime</scope>
+        </dependency>-->
+        <!--<dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+            <scope>runtime</scope>
+        </dependency>-->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.restdocs</groupId>
+            <artifactId>spring-restdocs-mockmvc</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!--<dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-test</artifactId>
+            <scope>test</scope>
+        </dependency>-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>com.tngtech.archunit</groupId>
+            <artifactId>archunit</artifactId>
+            <version>0.22.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.tngtech.archunit</groupId>
+            <artifactId>archunit-junit5</artifactId>
+            <version>0.22.0</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+
+        <defaultGoal>install</defaultGoal>
+
+        <plugins>
+
+            <plugin>
+                <groupId>com.buschmais.jqassistant</groupId>
+                <artifactId>jqassistant-maven-plugin</artifactId>
+                <version>1.11.1</version>
+                <executions>
+                    <execution>
+                        <id>default-cli</id>
+                        <goals>
+                            <goal>scan</goal>
+                            <goal>analyze</goal>
+                        </goals>
+                        <configuration>
+                            <groups>
+                                <group>spring-boot:Strict</group>
+                                <!--<group>spring-boot:Default</group>-->
+                            </groups>
+                            <warnOnSeverity>MINOR</warnOnSeverity>
+                            <failOnSeverity>BLOCKER</failOnSeverity> <!-- default: MAJOR -->
+                            <rule>
+                                <defaultConceptSeverity>INFO</defaultConceptSeverity>
+                            </rule>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.asciidoctor</groupId>
+                <artifactId>asciidoctor-maven-plugin</artifactId>
+                <version>1.5.8</version>
+                <executions>
+                    <execution>
+                        <id>generate-docs</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>process-asciidoc</goal>
+                        </goals>
+                        <configuration>
+                            <backend>html</backend>
+                            <doctype>book</doctype>
+                        </configuration>
+                    </execution>
+                </executions>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.springframework.restdocs</groupId>
+                        <artifactId>spring-restdocs-asciidoctor</artifactId>
+                        <version>${spring-restdocs.version}</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>spring-boot-image-builder</id>
+                        <goals>
+                            <goal>build-info</goal>
+                        </goals>
+                        <configuration>
+                            <additionalProperties>
+                                <encoding.source>UTF-8</encoding.source>
+                                <encoding.reporting>UTF-8</encoding.reporting>
+                                <java.source>${java.version}</java.source>
+                                <java.target>${java.version}</java.target>
+                            </additionalProperties>
+                        </configuration>
+                    </execution>
+                </executions>
+                <configuration>
+                    <!-- uncomment jvmArguments for debugging -->
+                    <!--<jvmArguments>
+                        -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005
+                    </jvmArguments>-->
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                    <image>
+                        <!-- !image name must be lower-case! -->
+                        <name>docker.io/frankzinner/spring-boot26:${project.version}</name>
+                        <!--<env>
+                            <HTTP_PROXY>http://proxy.example.com</HTTP_PROXY>
+                            <HTTPS_PROXY>https://proxy.example.com</HTTPS_PROXY>
+                        </env>-->
+                        <cleanCache>true</cleanCache>
+                        <verboseLogging>false</verboseLogging>
+                    </image>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>6.5.2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!--<plugin>
+                <groupId>org.eclipse.jkube</groupId>
+                <artifactId>openshift-maven-plugin</artifactId>
+                <version>${jkube.version}</version>
+            </plugin>-->
+
+            <plugin>
+                <groupId>org.eclipse.jkube</groupId>
+                <artifactId>kubernetes-maven-plugin</artifactId>
+                <version>${jkube.version}</version>
+                <configuration>
+                    <registry>docker.io</registry>
+                    <!-- if images/image tag is used, then build tag must be used as well! -->
+                    <images>
+                        <image>
+                            <name>frankzinner/spring-boot26:%l</name>
+                            <alias>springboot-demo</alias>
+                            <build>
+                                <from>openjdk:11-jre-slim</from>
+                                <maintainer>john.doe@example.com</maintainer>
+                                <tags>
+                                    <!--<tag>latest</tag>-->
+                                    <tag>${project.version}</tag>
+                                </tags>
+                                <!--<ports>
+                                    <port>8181</port>
+                                </ports>-->
+                                <!--<volumes>
+                                    <volume>/path/to/expose</volume>
+                                </volumes>-->
+                                <buildOptions>
+                                    <!--<shmsize>2147483648</shmsize>-->
+                                </buildOptions>
+                                <!--<shell>
+                                    <exec>
+                                        <arg>/bin/sh</arg>
+                                        <arg>-c</arg>
+                                    </exec>
+                                </shell>-->
+                                <!--<runCmds>
+                                    <run>groupadd -r appUser</run>
+                                    <run>useradd -r -g appUser appUser</run>
+                                </runCmds>-->
+                                <!--<entryPoint>
+                                    &lt;!&ndash; exec form for ENTRYPOINT &ndash;&gt;
+                                    <exec>
+                                        <arg>java</arg>
+                                        <arg>-jar</arg>
+                                        <arg>/opt/app/server.jar</arg>
+                                    </exec>
+                                </entryPoint>-->
+                                <!--<assembly>
+                                    <name>maven</name>
+                                    <mode>dir</mode>
+                                    <exportTargetDir>false</exportTargetDir>
+                                    <targetDir>/opt/app</targetDir>
+                                    <permissions>auto</permissions>
+                                </assembly>-->
+                                <cmd>java -jar maven/${project.artifactId}-${project.version}.jar</cmd>
+                            </build>
+                        </image>
+                    </images>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>jkube</id>
+                        <goals>
+                            <goal>build</goal>
+                            <!--<goal>push</goal>-->
+                            <goal>resource</goal>
+                            <!--<goal>apply</goal>-->
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+        </plugins>
+
+    </build>
+
+</project>

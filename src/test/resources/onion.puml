@@ -1,0 +1,62 @@
+@startuml
+!theme  spacelab
+
+skinparam componentStyle uml2
+
+skinparam class {
+  BorderColor #grey
+  BackgroundColor #orange
+}
+
+package com.example.demo.domain {
+    package model {
+        class DomainModel
+    }
+    package service {
+        class DomainService
+        interface DomainRepository
+    }
+}
+
+package com.example.demo.application {
+    class ApplicationConfiguration
+}
+
+package com.example.demo.adapter {
+    package cli {
+        class Cli
+    }
+    package persistence {
+        class NoSqlRepository
+    }
+    package rest {
+        class RestController
+    }
+}
+
+DomainService --> DomainModel #green
+DomainService -right-> DomainRepository #green
+
+ApplicationConfiguration ---> DomainService #green
+Cli --> DomainService #green
+Cli --> DomainRepository #green
+NoSqlRepository --|> DomainRepository #green
+NoSqlRepository --> DomainModel #green
+RestController -> DomainService #green
+RestController --> DomainModel #green
+
+DomainModel ---> DomainService #crimson
+note right on link #crimson: the domain model\nmust be independent
+
+DomainService --> RestController #crimson
+note right on link #crimson: the domain must not know\nabout any driving adapters
+DomainService --> NoSqlRepository #crimson
+note right on link #crimson: the domain must not know about\nspecific technical infrastructure
+
+ApplicationConfiguration ---> Cli
+note right on link #crimson: application services must not\nknow about any adapters
+
+Cli --> RestController #crimson
+note right on link #crimson: one adapter must not know\nabout any other adapter
+
+@enduml

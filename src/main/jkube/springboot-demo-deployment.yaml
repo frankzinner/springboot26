@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: springboot-demo
+  name: springboot-demo
+spec:
+  replicas: 1
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: springboot-demo
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: springboot-demo
+    spec:
+      containers:
+       - name: spring-boot
+         #image: frankzinner/spring-boot26:latest
+         imagePullPolicy: Always
+         ports:
+          - containerPort: 9779
+            name: prometheus
+            protocol: TCP
+          - containerPort: 8778
+            name: jolokia
+            protocol: TCP
+         securityContext:
+          privileged: false
